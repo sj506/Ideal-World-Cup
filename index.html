@@ -109,7 +109,7 @@
 </head>
 <body>
     <div class="container">
-        <h1>5라운드 선택형 월드컵</h1>
+        <h1>이상형 월드컵</h1>
         <div class="progress">
             <div class="progress-bar" id="progressBar" style="width: 0%"></div>
         </div>
@@ -121,33 +121,42 @@
     </div>
 
     <script>
-        const items = Array.from({length: 20}, (_, i) => ({
-            id: i+1,
-            name: `아이템 ${i+1}`,
-            image: `https://picsum.photos/seed/${i+1}00/350/350`
-        }));
-
-        let currentRound = 0;  // 0부터 시작
-        const totalRounds = 5;
+        const items = [
+        { id: 1, name: "피자", image: "https://cdn.pixabay.com/photo/2017/12/09/08/18/pizza-3007395_960_720.jpg" },
+        { id: 2, name: "햄버거", image: "https://cdn.pixabay.com/photo/2017/12/09/08/18/pizza-3007395_960_720.jpg" },
+        { id: 3, name: "초밥", image: "https://cdn.pixabay.com/photo/2017/12/09/08/18/pizza-3007395_960_720.jpg" },
+        { id: 4, name: "파스타", image: "https://cdn.pixabay.com/photo/2017/12/09/08/18/pizza-3007395_960_720.jpg" },
+        { id: 5, name: "스테이크", image: "https://cdn.pixabay.com/photo/2017/12/09/08/18/pizza-3007395_960_720.jpg" },
+        { id: 6, name: "타코", image: "https://cdn.pixabay.com/photo/2017/12/09/08/18/pizza-3007395_960_720.jpg" },
+        { id: 7, name: "라면", image: "https://cdn.pixabay.com/photo/2017/12/09/08/18/pizza-3007395_960_720.jpg" },
+        { id: 8, name: "샐러드", image: "https://cdn.pixabay.com/photo/2017/12/09/08/18/pizza-3007395_960_720.jpg" },
+        { id: 9, name: "치킨", image: "https://cdn.pixabay.com/photo/2017/12/09/08/18/pizza-3007395_960_720.jpg" },
+        { id: 10, name: "케이크", image: "https://cdn.pixabay.com/photo/2017/12/09/08/18/pizza-3007395_960_720.jpg" },
+    ];
+        
+        // 각 라운드의 정해진 매칭 (id 기반으로 설정)
+        const roundMatchups = [
+            [1, 2], 
+            [3, 4],
+            [5, 6], 
+            [7, 8], 
+            [9, 10], 
+        ];
+        
+        let currentRound = 0;
+        const totalRounds = roundMatchups.length;
         let selectedItems = [];
-        let usedItems = new Set();
-
-        function getRandomPair() {
-            const availableItems = items.filter(item => !usedItems.has(item.id));
-            const shuffled = [...availableItems].sort(() => 0.5 - Math.random());
-            return shuffled.slice(0, 2);
-        }
-
+        
         function updateProgress(progress) {
             document.getElementById('progressBar').style.width = `${progress}%`;
         }
-
+        
         function showMatch() {
-            const [item1, item2] = getRandomPair();
+            const [id1, id2] = roundMatchups[currentRound];
+            const item1 = items.find(item => item.id === id1);
+            const item2 = items.find(item => item.id === id2);
             const progress = (currentRound / totalRounds) * 100;
-
-            usedItems.add(item1.id).add(item2.id);
-
+        
             const matchHTML = `
                 <div class="candidate" onclick="selectItem(${item1.id}, ${currentRound + 1})">
                     <img src="${item1.image}" alt="${item1.name}">
@@ -159,25 +168,24 @@
                     <p>${item2.name}</p>
                 </div>
             `;
-
+        
             document.getElementById('matchBox').innerHTML = matchHTML;
-
+        
             updateProgress(progress);
         }
-
+        
         function selectItem(selectedId, round) {
             const selectedItem = items.find(item => item.id === selectedId);
-            selectedItems.push({...selectedItem, round});
+            selectedItems.push({ ...selectedItem, round });
         
             if (currentRound >= totalRounds - 1) { // 마지막 라운드 선택 시
                 showResult(); // 진행률 업데이트 없이 바로 결과 표시
             } else {
                 currentRound++;
-                usedItems.clear();
                 showMatch();
             }
         }
-
+        
         function showResult() {
             updateProgress(100); // 결과 화면 표시 시 진행률을 100%로 설정
             const resultHTML = selectedItems.map((item, index) => `
@@ -194,9 +202,9 @@
             document.getElementById('result').style.display = 'block';
             document.getElementById('matchBox').style.display = 'none';
         }
-
+        
         // 초기 시작
         showMatch();
-    </script>
+        </script>
 </body>
 </html>
