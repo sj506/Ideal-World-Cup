@@ -121,11 +121,19 @@
     </div>
 
     <script>
-        const items = Array.from({length: 20}, (_, i) => ({
-            id: i+1,
-            name: `아이템 ${i+1}`,
-            image: `https://picsum.photos/seed/${i+1}00/350/350`
-        }));
+const items = [
+            { id: 1, name: "강아지", image: "https://via.placeholder.com/350x350/FFCCCC?text=Dog" },
+            { id: 2, name: "고양이", image: "https://via.placeholder.com/350x350/CCFFCC?text=Cat" },
+            { id: 3, name: "토끼", image: "https://via.placeholder.com/350x350/CCCCFF?text=Rabbit" },
+            { id: 4, name: "사자", image: "https://via.placeholder.com/350x350/FFCC99?text=Lion" },
+            { id: 5, name: "호랑이", image: "https://via.placeholder.com/350x350/99CCFF?text=Tiger" },
+            { id: 6, name: "팬더", image: "https://via.placeholder.com/350x350/FF9999?text=Panda" },
+            { id: 7, name: "기린", image: "https://via.placeholder.com/350x350/99FF99?text=Giraffe" },
+            { id: 8, name: "코알라", image: "https://via.placeholder.com/350x350/9999FF?text=Koala" },
+            { id: 9, name: "펭귄", image: "https://via.placeholder.com/350x350/FF9966?text=Penguin" },
+            { id: 10, name: "코끼리", image: "https://via.placeholder.com/350x350/66CCFF?text=Elephant" },
+            // 필요에 따라 더 많은 아이템 추가 가능
+        ];
 
         let currentRound = 0;  // 0부터 시작
         const totalRounds = 5;
