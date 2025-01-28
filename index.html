@@ -28,15 +28,8 @@
             justify-content: center;
             gap: 30px;
             margin: 30px 0;
-            flex-wrap: wrap; /* 핸드폰에서 줄 바꿈 가능 */
-        }
-
-        @media (max-width: 768px) {
-            .match-box {
-                flex-direction: column; /* 핸드폰에서는 세로 정렬 */
-                align-items: center;
-                gap: 20px;
-            }
+            flex-wrap: nowrap; 
+            /* 핸드폰에서 줄 바꿈 가능 */
         }
 
         .candidate {
@@ -122,12 +115,6 @@
             align-self: center; /* 가운데 정렬 */
         }
 
-        @media (max-width: 768px) {
-            .vs {
-                margin: 10px 0;
-            }
-        }
-
         .restart-button {
             margin-top: 20px; 
             padding: 10px 20px; 
@@ -138,6 +125,23 @@
             border-radius: 10px; 
             cursor: pointer; 
         }
+
+        @media (max-width: 648px) {
+            .vs {
+                margin: 10px 0;
+            }
+        }
+        
+        @media (max-width: 648px) {
+            .match-box {
+                flex-wrap: wrap; /* 핸드폰에서 줄 바꿈 가능 */
+                flex-direction: column; /* 핸드폰에서는 세로 정렬 */
+                align-items: center;
+                gap: 20px;
+            }
+        }
+
+
     </style>
 </head>
 <body>
