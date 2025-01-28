@@ -28,6 +28,15 @@
             justify-content: center;
             gap: 30px;
             margin: 30px 0;
+            flex-wrap: wrap; /* 핸드폰에서 줄 바꿈 가능 */
+        }
+
+        @media (max-width: 768px) {
+            .match-box {
+                flex-direction: column; /* 핸드폰에서는 세로 정렬 */
+                align-items: center;
+                gap: 20px;
+            }
         }
 
         .candidate {
@@ -36,7 +45,8 @@
             width: 350px;
             border-radius: 15px;
             overflow: hidden;
-            box-shadow: 0 5px 15px rgba(0,0,0,0.1);
+            box-shadow: 0 5px 15px rgba(0, 0, 0, 0.1);
+            
         }
 
         .candidate:hover {
@@ -105,6 +115,29 @@
             color: #7f8c8d;
             margin-bottom: 5px;
         }
+
+        .vs {
+            font-size: 1.5em;
+            color: #7f8c8d;
+            align-self: center; /* 가운데 정렬 */
+        }
+
+        @media (max-width: 768px) {
+            .vs {
+                margin: 10px 0;
+            }
+        }
+
+        .restart-button {
+            margin-top: 20px; 
+            padding: 10px 20px; 
+            font-size: 1em; 
+            background-color: #3498db; 
+            color: white; 
+            border: none; 
+            border-radius: 10px; 
+            cursor: pointer; 
+        }
     </style>
 </head>
 <body>
@@ -117,10 +150,25 @@
         <div id="result">
             <h2>당신의 선택 결과</h2>
             <div id="selectedItems"></div>
+            <div id="result">
+                <h2>당신의 선택 결과</h2>
+                <div id="selectedItems"></div>
+            </div>
+            <button class="restart-button">다시하기</button>
         </div>
     </div>
 
+
+    
     <script>
+        // DOM 요소 선택
+        const matchBox = document.querySelector('#matchBox');
+        const progressBar = document.querySelector('.progress-bar');
+        const resultSection = document.querySelector('#result');
+        const selectedItemsContainer = document.querySelector('#selectedItems');
+        const restartButton = document.querySelector('.restart-button');
+    
+        // 데이터와 상태 관리
         const items = [
         { id: 1, name: "피자", image: "https://cdn.pixabay.com/photo/2017/12/09/08/18/pizza-3007395_960_720.jpg" },
         { id: 2, name: "햄버거", image: "https://cdn.pixabay.com/photo/2017/12/09/08/18/pizza-3007395_960_720.jpg" },
@@ -133,62 +181,72 @@
         { id: 9, name: "치킨", image: "https://cdn.pixabay.com/photo/2017/12/09/08/18/pizza-3007395_960_720.jpg" },
         { id: 10, name: "케이크", image: "https://cdn.pixabay.com/photo/2017/12/09/08/18/pizza-3007395_960_720.jpg" },
     ];
-        
-        // 각 라운드의 정해진 매칭 (id 기반으로 설정)
-        const roundMatchups = [
-            [1, 2], 
-            [3, 4],
-            [5, 6], 
-            [7, 8], 
-            [9, 10], 
-        ];
-        
+    
         let currentRound = 0;
-        const totalRounds = roundMatchups.length;
+        const totalRounds = 5;
         let selectedItems = [];
-        
-        function updateProgress(progress) {
-            document.getElementById('progressBar').style.width = `${progress}%`;
+        let usedItems = new Set();
+    
+        // 랜덤 쌍 가져오기
+        function getFixedPair() {
+            const availableItems = items.filter(item => !usedItems.has(item.id));
+            const pair = availableItems.slice(currentRound * 2, currentRound * 2 + 2);
+            usedItems.add(pair[0].id).add(pair[1].id);
+            return pair;
         }
-        
+    
+        // 진행률 업데이트
+        function updateProgress(progress) {
+            progressBar.style.width = `${progress}%`;
+        }
+    
+        // 매치 보여주기
         function showMatch() {
-            const [id1, id2] = roundMatchups[currentRound];
-            const item1 = items.find(item => item.id === id1);
-            const item2 = items.find(item => item.id === id2);
+            const [item1, item2] = getFixedPair();
             const progress = (currentRound / totalRounds) * 100;
-        
-            const matchHTML = `
-                <div class="candidate" onclick="selectItem(${item1.id}, ${currentRound + 1})">
+    
+            matchBox.innerHTML = `
+                <div class="candidate" data-id="${item1.id}">
                     <img src="${item1.image}" alt="${item1.name}">
                     <p>${item1.name}</p>
                 </div>
                 <div class="vs">VS</div>
-                <div class="candidate" onclick="selectItem(${item2.id}, ${currentRound + 1})">
+                <div class="candidate" data-id="${item2.id}">
                     <img src="${item2.image}" alt="${item2.name}">
                     <p>${item2.name}</p>
                 </div>
             `;
-        
-            document.getElementById('matchBox').innerHTML = matchHTML;
-        
+    
             updateProgress(progress);
+    
+            // 각 후보 클릭 이벤트 추가
+            document.querySelectorAll('.candidate').forEach(candidate => {
+                candidate.addEventListener('click', (e) => {
+                    const selectedId = parseInt(e.currentTarget.dataset.id, 10);
+                    selectItem(selectedId);
+                });
+            });
         }
-        
-        function selectItem(selectedId, round) {
+    
+        // 선택 항목 처리
+        function selectItem(selectedId) {
             const selectedItem = items.find(item => item.id === selectedId);
-            selectedItems.push({ ...selectedItem, round });
-        
-            if (currentRound >= totalRounds - 1) { // 마지막 라운드 선택 시
-                showResult(); // 진행률 업데이트 없이 바로 결과 표시
+            selectedItems.push({ ...selectedItem, round: currentRound + 1 });
+    
+            if (currentRound >= totalRounds - 1) {
+                showResult();
             } else {
                 currentRound++;
+                usedItems.clear();
                 showMatch();
             }
         }
-        
+    
+        // 결과 화면 표시
         function showResult() {
-            updateProgress(100); // 결과 화면 표시 시 진행률을 100%로 설정
-            const resultHTML = selectedItems.map((item, index) => `
+            updateProgress(100);
+    
+            const resultHTML = selectedItems.map(item => `
                 <div class="selected-item">
                     <img src="${item.image}" alt="${item.name}">
                     <div>
@@ -197,14 +255,20 @@
                     </div>
                 </div>
             `).join('');
-        
-            document.getElementById('selectedItems').innerHTML = resultHTML;
-            document.getElementById('result').style.display = 'block';
-            document.getElementById('matchBox').style.display = 'none';
+    
+            selectedItemsContainer.innerHTML = resultHTML;
+            resultSection.style.display = 'block';
+            matchBox.style.display = 'none';
         }
-        
+    
+        // 다시하기 버튼 이벤트 추가
+        restartButton.addEventListener('click', () => {
+            location.reload();
+        });
+    
         // 초기 시작
         showMatch();
-        </script>
+    </script>
+    
 </body>
 </html>
